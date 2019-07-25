@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\Mailer\Bridge\Sendgrid\Smtp;
+namespace Symfony\Component\Mailer\Bridge\Sendgrid\Transport;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
@@ -18,7 +18,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 /**
  * @author Kevin Verschaeve
  */
-class SendgridTransport extends EsmtpTransport
+class SendgridSmtpTransport extends EsmtpTransport
 {
     public function __construct(string $key, EventDispatcherInterface $dispatcher = null, LoggerInterface $logger = null)
     {

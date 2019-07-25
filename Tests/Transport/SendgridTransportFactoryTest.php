@@ -9,10 +9,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\Mailer\Bridge\Sendgrid\Tests\Factory;
+namespace Symfony\Component\Mailer\Bridge\Sendgrid\Tests\Transport;
 
-use Symfony\Component\Mailer\Bridge\Sendgrid;
-use Symfony\Component\Mailer\Bridge\Sendgrid\Factory\SendgridTransportFactory;
+use Symfony\Component\Mailer\Bridge\Sendgrid\Transport\SendgridApiTransport;
+use Symfony\Component\Mailer\Bridge\Sendgrid\Transport\SendgridSmtpTransport;
+use Symfony\Component\Mailer\Bridge\Sendgrid\Transport\SendgridTransportFactory;
 use Symfony\Component\Mailer\Tests\TransportFactoryTestCase;
 use Symfony\Component\Mailer\Transport\Dsn;
 use Symfony\Component\Mailer\Transport\TransportFactoryInterface;
@@ -49,12 +50,12 @@ class SendgridTransportFactoryTest extends TransportFactoryTestCase
 
         yield [
             new Dsn('api', 'sendgrid', self::USER),
-            new Sendgrid\Http\Api\SendgridTransport(self::USER, $this->getClient(), $dispatcher, $logger),
+            new SendgridApiTransport(self::USER, $this->getClient(), $dispatcher, $logger),
         ];
 
         yield [
             new Dsn('smtp', 'sendgrid', self::USER),
-            new Sendgrid\Smtp\SendgridTransport(self::USER, $dispatcher, $logger),
+            new SendgridSmtpTransport(self::USER, $dispatcher, $logger),
         ];
     }
 

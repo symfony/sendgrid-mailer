@@ -9,9 +9,8 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\Mailer\Bridge\Sendgrid\Factory;
+namespace Symfony\Component\Mailer\Bridge\Sendgrid\Transport;
 
-use Symfony\Component\Mailer\Bridge\Sendgrid;
 use Symfony\Component\Mailer\Exception\UnsupportedSchemeException;
 use Symfony\Component\Mailer\Transport\AbstractTransportFactory;
 use Symfony\Component\Mailer\Transport\Dsn;
@@ -27,11 +26,11 @@ final class SendgridTransportFactory extends AbstractTransportFactory
         $key = $this->getUser($dsn);
 
         if ('api' === $dsn->getScheme()) {
-            return new Sendgrid\Http\Api\SendgridTransport($key, $this->client, $this->dispatcher, $this->logger);
+            return new SendgridApiTransport($key, $this->client, $this->dispatcher, $this->logger);
         }
 
         if ('smtp' === $dsn->getScheme()) {
-            return new Sendgrid\Smtp\SendgridTransport($key, $this->dispatcher, $this->logger);
+            return new SendgridSmtpTransport($key, $this->dispatcher, $this->logger);
         }
 
         throw new UnsupportedSchemeException($dsn, ['api', 'smtp']);
