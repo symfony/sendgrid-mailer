@@ -39,7 +39,7 @@ class SendgridApiTransport extends AbstractApiTransport
         ?HttpClientInterface $client = null,
         ?EventDispatcherInterface $dispatcher = null,
         ?LoggerInterface $logger = null,
-        private ?string $region = null
+        private ?string $region = null,
     ) {
         parent::__construct($client, $dispatcher, $logger);
     }
