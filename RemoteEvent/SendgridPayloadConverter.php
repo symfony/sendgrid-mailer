@@ -31,7 +31,7 @@ final class SendgridPayloadConverter implements PayloadConverterInterface
                 'deferred' => MailerDeliveryEvent::DEFERRED,
                 'bounce' => MailerDeliveryEvent::BOUNCE,
             };
-            $event = new MailerDeliveryEvent($name, $payload['sg_message_id'], $payload);
+            $event = new MailerDeliveryEvent($name, $payload['sg_message_id'] ?? $payload['sg_event_id'], $payload);
             $event->setReason($payload['reason'] ?? '');
         } else {
             $name = match ($payload['event']) {
@@ -41,7 +41,7 @@ final class SendgridPayloadConverter implements PayloadConverterInterface
                 'spamreport' => MailerEngagementEvent::SPAM,
                 default => throw new ParseException(sprintf('Unsupported event "%s".', $payload['event'])),
             };
-            $event = new MailerEngagementEvent($name, $payload['sg_message_id'], $payload);
+            $event = new MailerEngagementEvent($name, $payload['sg_message_id'] ?? $payload['sg_event_id'], $payload);
         }
 
         if (!$date = \DateTimeImmutable::createFromFormat('U', $payload['timestamp'])) {
