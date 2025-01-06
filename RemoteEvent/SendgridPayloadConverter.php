@@ -51,7 +51,7 @@ final class SendgridPayloadConverter implements PayloadConverterInterface
         $event->setDate($date);
         $event->setRecipientEmail($payload['email']);
         $event->setMetadata([]);
-        $event->setTags($payload['category'] ?? []);
+        $event->setTags((array) ($payload['category'] ?? []));
 
         return $event;
     }
