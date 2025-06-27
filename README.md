@@ -28,7 +28,7 @@ framework:
         routing:
             sendgrid:
                 service: mailer.webhook.request_parser.sendgrid
-                secret: '!SENDGRID_VALIDATION_SECRET!' # Leave blank if you dont want to use the signature validation
+                secret: '!SENDGRID_VALIDATION_SECRET!' # Leave blank if you don't want to use the signature validation
 ```
 
 And a consume:
