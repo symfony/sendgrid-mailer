@@ -118,11 +118,10 @@ class SendgridApiTransport extends AbstractApiTransport
         $customArguments = [];
         $categories = [];
 
-        // these headers can't be overwritten according to Sendgrid docs
-        // see https://sendgrid.api-docs.io/v3.0/mail-send/mail-send-errors#-Headers-Errors
-        $headersToBypass = ['x-sg-id', 'x-sg-eid', 'received', 'dkim-signature', 'content-transfer-encoding', 'from', 'to', 'cc', 'bcc', 'subject', 'content-type', 'reply-to'];
         foreach ($email->getHeaders()->all() as $name => $header) {
-            if (\in_array($name, $headersToBypass, true)) {
+            // these headers can't be overwritten according to Sendgrid docs
+            // see https://sendgrid.api-docs.io/v3.0/mail-send/mail-send-errors#-Headers-Errors
+            if (\in_array($name, ['x-sg-id', 'x-sg-eid', 'received', 'dkim-signature', 'content-transfer-encoding', 'from', 'to', 'cc', 'bcc', 'subject', 'content-type', 'reply-to'], true)) {
                 continue;
             }
 
