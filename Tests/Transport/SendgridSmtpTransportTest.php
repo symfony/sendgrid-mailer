@@ -11,14 +11,13 @@
 
 namespace Symfony\Component\Mailer\Bridge\Sendgrid\Tests\Transport;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mailer\Bridge\Sendgrid\Transport\SendgridSmtpTransport;
 
 class SendgridSmtpTransportTest extends TestCase
 {
-    /**
-     * @dataProvider getTransportData
-     */
+    #[DataProvider('getTransportData')]
     public function testToString(SendgridSmtpTransport $transport, string $expected)
     {
         $this->assertSame($expected, (string) $transport);
