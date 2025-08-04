@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\Mailer\Bridge\Sendgrid\Tests\Transport;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mailer\Bridge\Sendgrid\Transport\SendgridApiTransport;
 use Symfony\Component\Mailer\Envelope;
@@ -24,9 +25,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class SendgridApiTransportTest extends TestCase
 {
-    /**
-     * @dataProvider getTransportData
-     */
+    #[DataProvider('getTransportData')]
     public function testToString(SendgridApiTransport $transport, string $expected)
     {
         $this->assertSame($expected, (string) $transport);
