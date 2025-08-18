@@ -13,7 +13,12 @@ namespace Symfony\Component\Mailer\Bridge\Sendgrid\Transport;
 
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Mailer\Bridge\Sendgrid\Header\SuppressionGroupHeader;
+use Symfony\Component\Mailer\Envelope;
+use Symfony\Component\Mailer\SentMessage;
 use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
+use Symfony\Component\Mime\Message;
+use Symfony\Component\Mime\RawMessage;
 
 /**
  * @author Kevin Verschaeve
@@ -26,5 +31,48 @@ class SendgridSmtpTransport extends EsmtpTransport
 
         $this->setUsername('apikey');
         $this->setPassword($key);
+    }
+
+    public function send(RawMessage $message, ?Envelope $envelope = null): ?SentMessage
+    {
+        if ($message instanceof Message) {
+            $this->addSendgridHeaders($message);
+        }
+
+        return parent::send($message, $envelope);
+    }
+
+    private function addSendgridHeaders(Message $message): void
+    {
+        $headers = $message->getHeaders();
+
+        if ($headers->has('X-SMTPAPI')) {
+            return;
+        }
+
+        $suppressionHeader = null;
+
+        foreach ($headers->all() as $header) {
+            if ($header instanceof SuppressionGroupHeader) {
+                $suppressionHeader = $header;
+                break;
+            }
+        }
+
+        if ($suppressionHeader) {
+            $payload = [
+                'asm' => [
+                    'group_id' => $suppressionHeader->getGroupId(),
+                ],
+            ];
+
+            $groupsToDisplay = $suppressionHeader->getGroupsToDisplay();
+            if ($groupsToDisplay) {
+                $payload['asm']['groups_to_display'] = $groupsToDisplay;
+            }
+
+            $headers->addTextHeader('X-SMTPAPI', json_encode($payload, \JSON_UNESCAPED_SLASHES));
+            $headers->remove('X-Sendgrid-SuppressionGroup');
+        }
     }
 }

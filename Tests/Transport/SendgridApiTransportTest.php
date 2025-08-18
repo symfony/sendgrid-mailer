@@ -13,6 +13,7 @@ namespace Symfony\Component\Mailer\Bridge\Sendgrid\Tests\Transport;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Mailer\Bridge\Sendgrid\Header\SuppressionGroupHeader;
 use Symfony\Component\Mailer\Bridge\Sendgrid\Transport\SendgridApiTransport;
 use Symfony\Component\Mailer\Envelope;
 use Symfony\Component\Mailer\Header\MetadataHeader;
@@ -288,5 +289,24 @@ class SendgridApiTransportTest extends TestCase
         $this->assertArrayHasKey('content_id', $payload['attachments'][0]);
 
         $this->assertSame('text.txt', $payload['attachments'][0]['content_id']);
+    }
+
+    public function testWithSuppressionGroup()
+    {
+        $email = new Email();
+        $email->getHeaders()->add(new SuppressionGroupHeader(1, [1, 2, 3, 4, 5]));
+        $envelope = new Envelope(new Address('alice@system.com'), [new Address('bob@system.com')]);
+
+        $transport = new SendgridApiTransport('ACCESS_KEY');
+        $method = new \ReflectionMethod(SendgridApiTransport::class, 'getPayload');
+        $payload = $method->invoke($transport, $email, $envelope);
+
+        $this->assertArrayHasKey('asm', $payload);
+        $this->assertArrayHasKey('group_id', $payload['asm']);
+        $this->assertArrayHasKey('groups_to_display', $payload['asm']);
+
+        $this->assertCount(5, $payload['asm']['groups_to_display']);
+
+        $this->assertSame([1, 2, 3, 4, 5], $payload['asm']['groups_to_display']);
     }
 }

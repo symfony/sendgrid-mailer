@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+7.4
+---
+
+ * Add support for suppression groups via `SuppressionGroupHeader`
+
 7.2
 ---
 
