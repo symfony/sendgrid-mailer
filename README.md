@@ -44,6 +44,22 @@ class SendGridConsumer implements ConsumerInterface
 }
 ```
 
+Suppression Groups
+------------------
+
+Create an e-mail and add the `SuppressionGroupHeader`:
+
+```php
+use Symfony\Component\Mailer\Bridge\Sendgrid\Header\SuppressionGroupHeader;
+// [...]
+$email = new Email();
+$email->getHeaders()->add(new SuppressionGroupHeader(GROUP_ID, GROUPS_TO_DISPLAY));
+```
+
+where:
+ - `GROUP_ID` is your Sendgrid suppression group ID
+ - `GROUPS_TO_DISPLAY_ID` is an array of the Sendgrid suppression group IDs presented to the user
+
 Resources
 ---------
 

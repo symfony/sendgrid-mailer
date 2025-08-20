@@ -13,7 +13,10 @@ namespace Symfony\Component\Mailer\Bridge\Sendgrid\Tests\Transport;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Mailer\Bridge\Sendgrid\Header\SuppressionGroupHeader;
 use Symfony\Component\Mailer\Bridge\Sendgrid\Transport\SendgridSmtpTransport;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 
 class SendgridSmtpTransportTest extends TestCase
 {
@@ -35,5 +38,30 @@ class SendgridSmtpTransportTest extends TestCase
                 'smtps://smtp.eu.sendgrid.net',
             ],
         ];
+    }
+
+    public function testSuppressionGroupHeader()
+    {
+        $email = (new Email())->subject('Hello!')
+            ->to(new Address('kevin@symfony.com', 'Kevin'))
+            ->from(new Address('fabpot@symfony.com', 'Fabien'))
+            ->text('Hello There!');
+        $email->getHeaders()->add(new SuppressionGroupHeader(1, [1, 2, 3, 4, 5]));
+
+        $transport = new SendgridSmtpTransport('ACCESS_KEY');
+        $method = new \ReflectionMethod(SendgridSmtpTransport::class, 'addSendgridHeaders');
+        $method->invoke($transport, $email);
+
+        $this->assertFalse($email->getHeaders()->has('X-Sendgrid-SuppressionGroup'));
+        $this->assertTrue($email->getHeaders()->has('X-SMTPAPI'));
+
+        $json = $email->getHeaders()->get('X-SMTPAPI')->getBodyAsString();
+        $payload = json_decode($json, true);
+
+        $this->assertArrayHasKey('asm', $payload);
+        $this->assertArrayHasKey('group_id', $payload['asm']);
+        $this->assertArrayHasKey('groups_to_display', $payload['asm']);
+        $this->assertCount(5, $payload['asm']['groups_to_display']);
+        $this->assertSame([1, 2, 3, 4, 5], $payload['asm']['groups_to_display']);
     }
 }

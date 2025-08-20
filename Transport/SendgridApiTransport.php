@@ -13,6 +13,7 @@ namespace Symfony\Component\Mailer\Bridge\Sendgrid\Transport;
 
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Mailer\Bridge\Sendgrid\Header\SuppressionGroupHeader;
 use Symfony\Component\Mailer\Envelope;
 use Symfony\Component\Mailer\Exception\HttpTransportException;
 use Symfony\Component\Mailer\Exception\TransportException;
@@ -132,6 +133,13 @@ class SendgridApiTransport extends AbstractApiTransport
                 $categories[] = mb_substr($header->getValue(), 0, 255);
             } elseif ($header instanceof MetadataHeader) {
                 $customArguments[$header->getKey()] = $header->getValue();
+            } elseif ($header instanceof SuppressionGroupHeader) {
+                $payload['asm'] = [
+                    'group_id' => $header->getGroupId(),
+                ];
+                if ($groupsToDisplay = $header->getGroupsToDisplay()) {
+                    $payload['asm']['groups_to_display'] = $groupsToDisplay;
+                }
             } else {
                 $payload['headers'][$header->getName()] = $header->getBodyAsString();
             }
