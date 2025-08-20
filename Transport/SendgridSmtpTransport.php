@@ -50,29 +50,27 @@ class SendgridSmtpTransport extends EsmtpTransport
             return;
         }
 
-        $suppressionHeader = null;
-
         foreach ($headers->all() as $header) {
             if ($header instanceof SuppressionGroupHeader) {
-                $suppressionHeader = $header;
                 break;
             }
         }
 
-        if ($suppressionHeader) {
-            $payload = [
-                'asm' => [
-                    'group_id' => $suppressionHeader->getGroupId(),
-                ],
-            ];
-
-            $groupsToDisplay = $suppressionHeader->getGroupsToDisplay();
-            if ($groupsToDisplay) {
-                $payload['asm']['groups_to_display'] = $groupsToDisplay;
-            }
-
-            $headers->addTextHeader('X-SMTPAPI', json_encode($payload, \JSON_UNESCAPED_SLASHES));
-            $headers->remove('X-Sendgrid-SuppressionGroup');
+        if (!$header instanceof SuppressionGroupHeader) {
+            return;
         }
+
+        $payload = [
+            'asm' => [
+                'group_id' => $header->getGroupId(),
+            ],
+        ];
+
+        if ($groupsToDisplay = $header->getGroupsToDisplay()) {
+            $payload['asm']['groups_to_display'] = $groupsToDisplay;
+        }
+
+        $headers->addTextHeader('X-SMTPAPI', json_encode($payload, \JSON_UNESCAPED_SLASHES));
+        $headers->remove('X-Sendgrid-SuppressionGroup');
     }
 }

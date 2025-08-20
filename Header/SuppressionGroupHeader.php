@@ -25,8 +25,6 @@ final class SuppressionGroupHeader extends UnstructuredHeader
         private int $groupId,
         private array $groupsToDisplay = [],
     ) {
-        $this->groupsToDisplay = array_values(array_map('intval', $groupsToDisplay));
-
         parent::__construct('X-Sendgrid-SuppressionGroup', json_encode([
             'group_id' => $groupId,
             'groups_to_display' => $this->groupsToDisplay,
@@ -38,6 +36,9 @@ final class SuppressionGroupHeader extends UnstructuredHeader
         return $this->groupId;
     }
 
+    /**
+     * @return int[]
+     */
     public function getGroupsToDisplay(): array
     {
         return $this->groupsToDisplay;
