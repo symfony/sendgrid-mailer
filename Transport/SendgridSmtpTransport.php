@@ -27,7 +27,13 @@ class SendgridSmtpTransport extends EsmtpTransport
 {
     public function __construct(#[\SensitiveParameter] string $key, ?EventDispatcherInterface $dispatcher = null, ?LoggerInterface $logger = null, private ?string $region = null)
     {
-        parent::__construct(null !== $region ? \sprintf('smtp.%s.sendgrid.net', $region) : 'smtp.sendgrid.net', 465, true, $dispatcher, $logger);
+        $host = 'smtp.sendgrid.net';
+
+        if (null !== $region && 'global' !== $region) {
+            $host = \sprintf('smtp.%s.sendgrid.net', $region);
+        }
+
+        parent::__construct($host, 465, true, $dispatcher, $logger);
 
         $this->setUsername('apikey');
         $this->setPassword($key);
