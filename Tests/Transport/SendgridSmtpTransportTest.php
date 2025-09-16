@@ -37,6 +37,10 @@ class SendgridSmtpTransportTest extends TestCase
                 new SendgridSmtpTransport('KEY', null, null, 'eu'),
                 'smtps://smtp.eu.sendgrid.net',
             ],
+            [
+                new SendgridSmtpTransport('KEY', null, null, 'global'),
+                'smtps://smtp.sendgrid.net',
+            ],
         ];
     }
 

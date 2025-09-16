@@ -5,6 +5,7 @@ CHANGELOG
 ---
 
  * Add support for suppression groups via `SuppressionGroupHeader`
+ * Add support for `global` region
 
 7.2
 ---
