@@ -119,8 +119,9 @@ class SendgridApiTransport extends AbstractApiTransport
 
         $customArguments = [];
         $categories = [];
+        $headers = $email->getHeaders();
 
-        foreach ($email->getHeaders()->all() as $name => $header) {
+        foreach ($headers->all() as $name => $header) {
             // these headers can't be overwritten according to Sendgrid docs
             // see https://sendgrid.api-docs.io/v3.0/mail-send/mail-send-errors#-Headers-Errors
             if (\in_array($name, ['x-sg-id', 'x-sg-eid', 'received', 'dkim-signature', 'content-transfer-encoding', 'from', 'to', 'cc', 'bcc', 'subject', 'content-type', 'reply-to'], true)) {
@@ -132,6 +133,7 @@ class SendgridApiTransport extends AbstractApiTransport
                     throw new TransportException(\sprintf('The "Send-At" header must be a "%s" instance.', DateHeader::class));
                 }
                 $payload['send_at'] = $header->getDateTime()->getTimestamp();
+                $headers->remove($name);
             } elseif ($header instanceof TagHeader) {
                 if (10 === \count($categories)) {
                     throw new TransportException(\sprintf('Too many "%s" instances present in the email headers. Sendgrid does not accept more than 10 categories on an email.', TagHeader::class));
